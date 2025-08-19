@@ -17,13 +17,19 @@ Use the **"Try it out"** button on each endpoint to test the API directly from t
 - Vehicle status tracking (idle, en_route, delivered)
 - Fleet statistics and analytics
 
-**WebSocket:** Connect to \`ws://localhost:3001\` for real-time vehicle updates.
+**WebSocket Connection:**
+- **Production:** Connect to \`wss://case-study-26cf.onrender.com\` 
+
       `,
       contact: {
         name: 'API Support'
       },
     },
     servers: [
+      {
+        url: 'https://case-study-26cf.onrender.com',
+        description: 'Production server'
+      },
       {
         url: 'http://localhost:3001',
         description: 'Development server'

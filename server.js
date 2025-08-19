@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const WebSocket = require('ws');
 const http = require('http');
+const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./docs/swagger.config');
 const { generateInitialFleet, simulateMovement, updateVehicleStatus, VEHICLE_STATUSES } = require('./data/mockData');
@@ -12,6 +13,14 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static WebSocket test page
+app.get('/websocket-test', (req, res) => {
+  res.sendFile(path.join(__dirname, 'websocket-test.html'));
+});
+
+// Serve static files (fallback for any HTML/CSS/JS files)
+app.use(express.static(__dirname));
 
 // Swagger UI Documentation - Available at /docs
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
@@ -280,10 +289,19 @@ app.get('/api/statistics', (req, res) => {
 
 // API documentation endpoint
 app.get('/api/docs', (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const baseUrl = req.get('host') === 'case-study-26cf.onrender.com' ? 
+    'https://case-study-26cf.onrender.com' : 
+    `http://localhost:${PORT}`;
+  const wsUrl = req.get('host') === 'case-study-26cf.onrender.com' ? 
+    'wss://case-study-26cf.onrender.com' : 
+    `ws://localhost:${PORT}`;
+  
   res.json({
-    title: 'Fleet Tracking Mock API',
+    title: 'Fleet Tracking API',
     version: '1.0.0',
-    description: 'Mock API for fleet tracking case study',
+    description: 'API for fleet tracking case study',
+    baseUrl: baseUrl,
     endpoints: {
       'GET /api/vehicles': 'Get all vehicles (supports ?status and ?limit query params)',
       'GET /api/vehicles/:id': 'Get vehicle by ID',
@@ -292,7 +310,7 @@ app.get('/api/docs', (req, res) => {
       'GET /api/docs': 'This documentation'
     },
     websocket: {
-      url: '/ws',
+      url: wsUrl,
       description: 'WebSocket endpoint for real-time vehicle updates',
       events: {
         'initial_data': 'Sent when client first connects',
@@ -390,4 +408,4 @@ server.listen(PORT, () => {
 
 });
 
-module.exports = app; 
+module.exports = app;
