@@ -4,7 +4,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Fleet Tracking API',
+      title: 'Fleet Tracking Dashboard API',
       version: '1.0.0',
       description: `
 **REST API for fleet tracking case study.**
